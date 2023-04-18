@@ -1,0 +1,65 @@
+.mWrap {opacity:0;}
+.mMove {opacity:0; white-space:nowrap; transform: translateZ(0);}
+.mWrap.mIni,
+.mWrap.mIni .mMove {opacity:1}
+.mWrap,
+.mWrap *{
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;      
+}
+.grab {
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+	cursor: grab;
+}
+.grabbing { 
+	cursor: -moz-grabbing !important;
+	cursor: -webkit-grabbing !important;
+	cursor: grabbing !important; 
+}
+.strTools *,
+.strTools *:after,
+.strTools *:before {
+	box-sizing:border-box !important;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;   
+}
+.mWrap img {
+	max-width:none !important;
+}
+.str_move {
+	cursor:move;
+}
+.str_static .str_move,
+.no_drag .str_move,
+.noStop .str_move{
+	cursor:inherit;
+}
+
+
+/* === Appearance Marquee === */
+.mWrap {
+	width: 100%;
+	height: 82%;
+	font-size: inherit;
+	line-height: inherit;
+	font-family: inherit;
+	text-transform: none;
+	text-align: left;
+	background: none;
+	color: inherit;
+	overflow: hidden;
+}
+.mWrap li{  line-height:40px; height:40px; }
+.mWrap li p,.wraptit{ font-size: 0; }
+.mWrap li span,.wraptit span{ display: inline-block; font-size: 18px;color: rgba(255,255,255,.6); text-align: center;}
+.mWraptit { border-bottom: 1px dotted rgba(255,255,255,.15); padding:0 0 10px 0; margin-bottom: 10px;}
+.mWraptit span{font-size: 20px;color: rgba(255,255,255,.8); }
+.mWrap li span:nth-child(1),.mWraptit span:nth-child(1){ width: 30%}
+.mWrap li span:nth-child(2),.mWraptit span:nth-child(2){ width: 25%}
+.mWrap li span:nth-child(3),.mWraptit span:nth-child(3){ width: 25%}
+.mWrap li span:nth-child(4),.mWraptit span:nth-child(4){ width: 20%}

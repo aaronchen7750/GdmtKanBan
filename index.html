@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./js/jquery.js"></script>
+	<script src="./js/echarts.min.js"></script>
+	<script src="./js/js.js"></script>
+	<script src="./js/jquery.cxselect.min.js"></script>
+	<script src="./js/limarquee4.6/jquery.limarquee.js"></script>
+	<link type="text/css" href="./css/comon0.css" rel="stylesheet" />
+	<link type="text/css" href="./css/HelpPage.css" rel="stylesheet" />
+	<style type="text/css">
+		.str_title {
+			color: #FFFFFF;
+		}
+	</style>
+</head>
+<body>
+	<div style="background: #000d4a url(images/bg.jpg) center top;">
+		<div class="head">
+			
+			<h1 align="center" class="str1 str_title">气表实时数据展示平台</h1>
+			<div class="weather"><span id="showTime"></span></div>
+		</div>
+		<script>
+			var interval = null;
+			//t = setTimeout(myTimer, 1000);//開始运行
+			if (interval != null) {//判断计时器是否为空
+				clearInterval(interval);
+				interval = null;
+			}
+			interval = setInterval(function () { myTimer() }, 1000);
+			function myTimer() {
+				//clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y = dt.getFullYear();
+				var mt = dt.getMonth() + 1;
+				var day = dt.getDate();
+				var h = dt.getHours();//获取时
+				var m = dt.getMinutes();//获取分
+				var s = dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+				//t = setTimeout(time, 1000); //设定定时器，循环运行
+			}
+		</script>
+		<div class="mainbox">
+			<ul class="clearfix">
+				<li>
+					<div class="boxall" id="meter_list" style="height:600px;">
+						<div class="alltitle">气表实时数据</div>
+						<div class="navboxall">
+							<div class="wraptit"> <span>月份</span><span>气表名称</span><span>月初流量</span><span>当前流量</span><span>月用气量</span><span>流量瞬时值</span><span>温度</span><span>压力</span><span>密度</span> </div>
+							<div class="wrap">
+								<ul id="ul_record">
+								</ul>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+	
+    <script>
+
+		var isreload = false;
+		var wayEnd = true;
+		var data_list = null;
+		$(function () {		
+			$("#meter_list").css('height', $(document).height() - 138);
+			$("#meter_list").css('width', $(document).width() - 50);
+			loadData();
+			var interval_list = null;
+			//t = setTimeout(myTimer, 1000);//開始运行
+			if (interval_list != null) {//判断计时器是否为空
+				clearInterval(interval_list);
+				interval_list = null;
+			}
+			interval_list = setInterval(function () { loadData() }, 5000);
+			//$('.str1').liMarquee();
+			$('.wrap').liMarquee({
+				height: 300,
+				direction: 'up',//向上滚动
+				//runshort: false,//内容不足时不滚动
+				scrollAmount: 10,//速度
+				scrolldelay: 10,
+				circular: false,
+				wayEnd: function () {
+					if (data_list != null) {
+						setData(data_list);
+					}				
+				}
+			});
+		});
+		function loadData() {
+			if (data_list == null) {			
+				$.ajax({
+					type:'get',
+                    url:'http://192.168.0.18:82/GetGasRecordList',
+                    success:function(data){
+						if(isreload==false){
+							setData(data);
+							isreload=true;
+						}
+						data_list=data;
+                    }
+					
+				});
+			}
+		}
+		function setData(data) {
+			$("#ul_record li").remove();
+			if (data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					var html = '<li><p><span>' + data[i].yearMonth + '</span><span>'  + data[i].gasName + '</span><span>' + data[i].gasStartQty + '</span><span>' + data[i].gasEndQty + '</span><span>' + data[i].qty + '</span><span>' + data[i].thisQty + '</span><span>' + data[i].tempQty + '</span><span>' + data[i].pressureQty + '</span><span>' + data[i].densityQty + '</span></p></li>';
+					$("#ul_record").append(html);
+				}
+			}
+			data = null;
+		}
+		
+    </script>
+</body>
+</html>

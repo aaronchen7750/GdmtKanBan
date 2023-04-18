@@ -1,0 +1,125 @@
+﻿@using Core;
+@using WebApi;
+@using Common;
+@using Locale;
+<head>
+	<meta charset="utf-8">
+	<title>数据可视化模板</title>
+	<script src="~/Areas/HelpPage/KANBANTEST/js/jquery.js" type="text/javascript"></script>
+	<script src="~/Areas/HelpPage/KANBANTEST/js/echarts.min.js" type="text/javascript"></script>
+	<script src="~/Areas/HelpPage/KANBANTEST/js/js.js" type="text/javascript"></script>
+	<script src="~/Areas/HelpPage/KANBANTEST/js/jquery.cxselect.min.js" type="text/javascript"></script>
+	@*<script src="@Url.Content("~/Views/KANBANTEST/js/limarquee6.5.0/jquery.limarquee.js")" type="text/javascript"></script>*@
+	<script src="~/Areas/HelpPage/KANBANTEST/js/limarquee4.6/jquery.limarquee.js" type="text/javascript"></script>
+	<link type="text/css" href="~/Areas/HelpPage/KANBANTEST/css/comon0.css" rel="stylesheet" />
+	<link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+	<style type="text/css">
+		.str_title {
+			color: #FFFFFF;
+		}
+	</style>
+</head>
+<body>
+	<div style="background:#000d4a url(Views/Areas/HelpPage/KANBANTEST/images/bg.jpg) center top;">
+		<div class="head">
+			@*<div style="padding-left:500px;padding-right:500px;"><h1 align="center" class="str1 str_title">电表实时数据展示平台</h1></div>*@
+			<h1 align="center" class="str1 str_title">电表实时数据展示平台</h1>
+			<div class="weather"><span id="showTime"></span></div>
+		</div>
+		<script>
+			var interval = null;
+			//t = setTimeout(myTimer, 1000);//開始运行
+			if (interval != null) {//判断计时器是否为空
+				clearInterval(interval);
+				interval = null;
+			}
+			interval = setInterval(function () { myTimer() }, 1000);
+			function myTimer() {
+				//clearTimeout(t);//清除定时器
+				dt = new Date();
+				var y = dt.getFullYear();
+				var mt = dt.getMonth() + 1;
+				var day = dt.getDate();
+				var h = dt.getHours();//获取时
+				var m = dt.getMinutes();//获取分
+				var s = dt.getSeconds();//获取秒
+				document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+				//t = setTimeout(time, 1000); //设定定时器，循环运行
+			}
+		</script>
+		<div class="mainbox">			
+			<ul class="clearfix">
+				<li>
+					<div class="boxall" id="meter_list" style="height:600px;">
+						<div class="alltitle">电表实时数据</div>
+						<div class="navboxall">
+							<div class="wraptit"> <span>电表名称</span><span>有功电能</span><span>功率因数</span><span>功率</span><span>A相电流</span><span>B相电流</span><span>C相电流</span><span>A相电压</span><span>B相电压</span><span>C相电压</span> </div>
+							<div class="wrap">
+								<ul id="ul_record">
+								</ul>
+							</div>
+						</div>
+					</div>
+				</li>				
+			</ul>
+		</div>
+	</div>
+	<script>
+		var isreload = false;
+		var wayEnd = true;
+		var data_list = null;
+		$(function () {		
+			$("#meter_list").css('height', $(document).height() - 138);
+			$("#meter_list").css('width', $(document).width() - 50);
+			loadData();
+			var interval_list = null;
+			//t = setTimeout(myTimer, 1000);//開始运行
+			if (interval_list != null) {//判断计时器是否为空
+				clearInterval(interval_list);
+				interval_list = null;
+			}
+			interval_list = setInterval(function () { loadData() }, 5000);
+			//$('.str1').liMarquee();
+			$('.wrap').liMarquee({
+				height: 300,
+				direction: 'up',//向上滚动
+				//runshort: false,//内容不足时不滚动
+				scrollAmount: 10,//速度
+				scrolldelay: 2000,
+				circular: false,
+				wayEnd: function () {
+					if (data_list != null) {
+						setData(data_list);
+					}				
+				}
+			});
+		});
+		function loadData() {
+			if (data_list == null) {			
+				$.ajax({
+					url: "@Url.Action("GetMeterList")",
+					type: "Post",
+					data: { q: "" },
+					dataType: "json",
+					success: function (data) {
+						if (isreload == false) {					
+							setData(data);
+							isreload = true;
+						} 
+						data_list = data;								
+					}
+				});
+			}
+		}
+		function setData(data) {
+			$("#ul_record li").remove();
+			if (data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					var html = '<li><p><span>' + data[i].elme_name + '</span><span>'  + data[i].current_watt + '</span><span>' + data[i].elre_power_factor + '</span><span>' + data[i].elre_power + '</span><span>' + data[i].elre_electricity_a + '</span><span>' + data[i].elre_electricity_b + '</span><span>' + data[i].elre_electricity_c + '</span><span>' + data[i].elre_voltage_a + '</span><span>' + data[i].elre_voltage_b + '</span><span>' + data[i].elre_voltage_c + '</span></p></li>';
+					$("#ul_record").append(html);
+				}
+			}
+			data = null;
+		}
+	</script>
+</body>
